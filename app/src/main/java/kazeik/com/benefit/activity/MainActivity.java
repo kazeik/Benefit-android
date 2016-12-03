@@ -8,6 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -35,6 +38,8 @@ public class MainActivity extends BaseActivity implements OnNetEventListener ,On
 
     @Bind(R.id.ll_botton_view)
     LinearLayout llBottonView;
+    @Bind(R.id.wv_view)
+    WebView webView;
     LayoutInflater inflater;
     int width;
     @Override
@@ -48,6 +53,14 @@ public class MainActivity extends BaseActivity implements OnNetEventListener ,On
         WindowManager wm = (WindowManager) this
                 .getSystemService(Context.WINDOW_SERVICE);
         width = wm.getDefaultDisplay().getWidth();
+        WebSettings setting = webView.getSettings();
+        setting.setJavaScriptEnabled(true);//支持js
+        webView.loadUrl("http://www.sina.com/");
+        webView.setWebChromeClient(new WebChromeClient() {
+            public void onProgressChanged(WebView view, int newProgress) {
+
+            }
+        });
         getData();
     }
 
@@ -89,6 +102,6 @@ public class MainActivity extends BaseActivity implements OnNetEventListener ,On
 
     @Override
     public void onItemEvent(String url) {
-        Toast.makeText(this,url,Toast.LENGTH_SHORT).show();
+        webView.loadUrl(url);
     }
 }
