@@ -58,6 +58,7 @@ public class MainActivity extends BaseActivity implements OnNetEventListener ,On
 
     @Override
     public void onNetSuccess(String tag, String body) {
+        AppUtils.Logs(getClass(),body);
         List<MenuListModel> items = new Gson().fromJson(body, new TypeToken<List<MenuListModel>>() {
         }.getType());
         if(null != items){
