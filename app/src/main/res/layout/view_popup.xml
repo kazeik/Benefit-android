@@ -7,10 +7,10 @@
 
     <ListView
         android:id="@+id/ls_listview"
-        android:layout_width="@dimen/dp_100"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:divider="@color/gray"
         android:dividerHeight="@dimen/dp_1"
-        android:layout_height="wrap_content"
         android:listSelector="@color/trans"></ListView>
 </LinearLayout>

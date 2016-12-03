@@ -12,6 +12,7 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 
 import kazeik.com.benefit.R;
+import kazeik.com.benefit.adapter.MenuAdapter;
 import kazeik.com.benefit.bean.MenuListModel;
 import kazeik.com.benefit.bean.OnItemEventListener;
 
@@ -25,14 +26,13 @@ public class PopupWindowUtil {
     public void showPopup(Activity context, View attrView, final MenuListModel model, int viewWidth, final OnItemEventListener listener) {
         dismissPopup();
         View layout = LayoutInflater.from(context).inflate(R.layout.view_popup, null);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, viewWidth);
-        layout.setLayoutParams(params);
         final ListView lsView = (ListView) layout.findViewById(R.id.ls_listview);
         String[] item = new String[model.value.size()];
         for (int i = 0; i < item.length; i++) {
             item[i] = model.value.get(i).subMenuName;
         }
         ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_list_item_1, item);
+//        MenuAdapter adapter = new MenuAdapter(context,model);
         lsView.setAdapter(adapter);
         lsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -43,7 +43,7 @@ public class PopupWindowUtil {
                 }
             }
         });
-        menuWindow = new PopupWindow(layout, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT); //后两个参数是width和height
+        menuWindow = new PopupWindow(layout,viewWidth, LinearLayout.LayoutParams.WRAP_CONTENT); //后两个参数是width和height
         menuWindow.setFocusable(true);
         menuWindow.setOutsideTouchable(true);
         menuWindow.setBackgroundDrawable(new BitmapDrawable());
