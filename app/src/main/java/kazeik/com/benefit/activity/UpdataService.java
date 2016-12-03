@@ -190,5 +190,6 @@ public class UpdataService extends Service {
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         i.setDataAndType(apk, "application/vnd.android.package-archive");
         startActivity(i);
+        stopSelf();
     }
 }
