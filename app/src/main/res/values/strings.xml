@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Benefit</string>
+    <string name="end">2016-12-31 23:59:59</string>
+    <string name="loading">加载中..</string>
+</resources>
