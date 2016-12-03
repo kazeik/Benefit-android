@@ -1,13 +1,17 @@
 package kazeik.com.benefit.activity;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -21,15 +25,18 @@ import butterknife.ButterKnife;
 import kazeik.com.benefit.BaseActivity;
 import kazeik.com.benefit.R;
 import kazeik.com.benefit.bean.MenuListModel;
+import kazeik.com.benefit.bean.OnItemEventListener;
 import kazeik.com.benefit.utils.AppUtils;
 import kazeik.com.benefit.utils.HttpNetUtils;
 import kazeik.com.benefit.utils.OnNetEventListener;
+import kazeik.com.benefit.view.PopupWindowUtil;
 
-public class MainActivity extends BaseActivity implements OnNetEventListener {
+public class MainActivity extends BaseActivity implements OnNetEventListener ,OnItemEventListener{
 
     @Bind(R.id.ll_botton_view)
     LinearLayout llBottonView;
     LayoutInflater inflater;
+    int width;
     @Override
     public int initLayout() {
         return R.layout.activity_main;
@@ -38,6 +45,9 @@ public class MainActivity extends BaseActivity implements OnNetEventListener {
     @Override
     public void initData() {
         inflater = LayoutInflater.from(this);
+        WindowManager wm = (WindowManager) this
+                .getSystemService(Context.WINDOW_SERVICE);
+        width = wm.getDefaultDisplay().getWidth();
         getData();
     }
 
@@ -51,18 +61,22 @@ public class MainActivity extends BaseActivity implements OnNetEventListener {
         List<MenuListModel> items = new Gson().fromJson(body, new TypeToken<List<MenuListModel>>() {
         }.getType());
         if(null != items){
-            for (MenuListModel item :items) {
-//                TextView textView = new TextView(this);
-//                textView.setText(item.item);
-//                textView.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL);
-//                textView.setTextSize(15);
-//                textView.setTextColor(Color.BLACK);
+            final int subWidth = width/items.size();
+            for (final MenuListModel item :items) {
                 RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.bottom_view,null);
                 TextView tvMenu = (TextView) view.findViewById(R.id.tv_menu_text);
                 tvMenu.setText(item.item);
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT,1.0f);
                 view.setLayoutParams(params);
                 llBottonView.addView(view);
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        PopupWindowUtil util = new PopupWindowUtil();
+                        util.dismissPopup();
+                        util.showPopup(MainActivity.this,view,item,subWidth,MainActivity.this);
+                    }
+                });
             }
         }
     }
@@ -73,9 +87,7 @@ public class MainActivity extends BaseActivity implements OnNetEventListener {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
+    public void onItemEvent(String url) {
+        Toast.makeText(this,url,Toast.LENGTH_SHORT).show();
     }
 }
