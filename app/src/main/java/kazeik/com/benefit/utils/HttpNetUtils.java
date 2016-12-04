@@ -10,6 +10,7 @@ import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest;
+import com.lidroid.xutils.util.LogUtils;
 
 import org.apache.http.entity.StringEntity;
 
@@ -44,6 +45,7 @@ public class HttpNetUtils {
     public void requestNetData(HttpRequest.HttpMethod method,
                                RequestParams params, final String tag, final OnNetEventListener listener) {
         String url = AppUtils.baseUrl + tag;
+        AppUtils.Logs(getClass(),url);
         HttpUtils utils = new HttpUtils();
         utils.configCurrentHttpCacheExpiry(50);
         httpHandler = utils.send(method, url, params,

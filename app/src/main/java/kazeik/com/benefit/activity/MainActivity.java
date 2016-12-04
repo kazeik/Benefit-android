@@ -21,16 +21,19 @@ import com.google.gson.reflect.TypeToken;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.client.HttpRequest;
 
+import java.util.Date;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import kazeik.com.benefit.BaseActivity;
+import kazeik.com.benefit.DropApplication;
 import kazeik.com.benefit.R;
 import kazeik.com.benefit.bean.MenuListModel;
 import kazeik.com.benefit.bean.OnItemEventListener;
 import kazeik.com.benefit.utils.AppUtils;
 import kazeik.com.benefit.utils.HttpNetUtils;
+import kazeik.com.benefit.utils.MyDateUtils;
 import kazeik.com.benefit.utils.OnNetEventListener;
 import kazeik.com.benefit.view.PopupWindowUtil;
 
@@ -42,6 +45,7 @@ public class MainActivity extends BaseActivity implements OnNetEventListener ,On
     WebView webView;
     LayoutInflater inflater;
     int width;
+    DropApplication application;
     @Override
     public int initLayout() {
         return R.layout.activity_main;
@@ -49,6 +53,7 @@ public class MainActivity extends BaseActivity implements OnNetEventListener ,On
 
     @Override
     public void initData() {
+        application = (DropApplication) getApplication();
         inflater = LayoutInflater.from(this);
         WindowManager wm = (WindowManager) this
                 .getSystemService(Context.WINDOW_SERVICE);
@@ -63,14 +68,24 @@ public class MainActivity extends BaseActivity implements OnNetEventListener ,On
         });
         getData();
     }
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Date time = MyDateUtils.getDateForStr(getString(R.string.end));
+        long tempTime = time.getTime();
+        if (System.currentTimeMillis() > tempTime) {
+            application.exit();
+            this.finish();
+        }
+    }
     private void getData() {
-        String url = "getMenuList.php";
-        HttpNetUtils.getInstance().requestNetData(HttpRequest.HttpMethod.GET, null, url, this);
+        showHud();
+        HttpNetUtils.getInstance().requestNetData(HttpRequest.HttpMethod.GET, null, AppUtils.menuList, this);
     }
 
     @Override
     public void onNetSuccess(String tag, String body) {
+        hideDialog();
         AppUtils.Logs(getClass(),body);
         List<MenuListModel> items = new Gson().fromJson(body, new TypeToken<List<MenuListModel>>() {
         }.getType());
@@ -97,7 +112,8 @@ public class MainActivity extends BaseActivity implements OnNetEventListener ,On
 
     @Override
     public void onNetError(String tag, String errorMsg, HttpException ex) {
-
+        hideDialog();
+        AppUtils.showToast(this,errorMsg);
     }
 
     @Override
