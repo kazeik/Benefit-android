@@ -3,8 +3,10 @@ package kazeik.com.benefit.activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -46,7 +48,6 @@ public class MainActivity extends BaseActivity implements OnNetEventListener, On
     LayoutInflater inflater;
     int width;
     DropApplication application;
-
     @Override
     public int initLayout() {
         return R.layout.activity_main;
@@ -61,12 +62,12 @@ public class MainActivity extends BaseActivity implements OnNetEventListener, On
         width = wm.getDefaultDisplay().getWidth();
         WebSettings setting = webView.getSettings();
         setting.setJavaScriptEnabled(true);//支持js
-        setting.setDisplayZoomControls(true);
+        setting.setLoadWithOverviewMode(true);
         setting.setSupportZoom(true);
         setting.setBuiltInZoomControls(true);
         setting.setUseWideViewPort(true);
+        setting.setDisplayZoomControls(false);
         setting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
-        setting.setLoadWithOverviewMode(true);
         webView.loadUrl("http://www.gyzx.org/");
         webView.setWebChromeClient(new WebChromeClient() {
             public void onProgressChanged(WebView view, int newProgress) {
