@@ -95,7 +95,6 @@ public class MainActivity extends BaseActivity implements OnNetEventListener, On
     @Override
     public void onNetSuccess(String tag, String body) {
         hideDialog();
-        AppUtils.Logs(getClass(), body);
         try {
             List<MenuListModel> items = new Gson().fromJson(body, new TypeToken<List<MenuListModel>>() {
             }.getType());
@@ -120,6 +119,7 @@ public class MainActivity extends BaseActivity implements OnNetEventListener, On
             }
         } catch (Exception ex) {
             AppUtils.showToast(this, "服务器数据异常，请检查数据");
+            ex.printStackTrace();
         }
     }
 
