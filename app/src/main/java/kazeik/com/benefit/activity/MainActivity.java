@@ -37,7 +37,7 @@ import kazeik.com.benefit.utils.MyDateUtils;
 import kazeik.com.benefit.utils.OnNetEventListener;
 import kazeik.com.benefit.view.PopupWindowUtil;
 
-public class MainActivity extends BaseActivity implements OnNetEventListener ,OnItemEventListener{
+public class MainActivity extends BaseActivity implements OnNetEventListener, OnItemEventListener {
 
     @Bind(R.id.ll_botton_view)
     LinearLayout llBottonView;
@@ -46,6 +46,7 @@ public class MainActivity extends BaseActivity implements OnNetEventListener ,On
     LayoutInflater inflater;
     int width;
     DropApplication application;
+
     @Override
     public int initLayout() {
         return R.layout.activity_main;
@@ -60,7 +61,13 @@ public class MainActivity extends BaseActivity implements OnNetEventListener ,On
         width = wm.getDefaultDisplay().getWidth();
         WebSettings setting = webView.getSettings();
         setting.setJavaScriptEnabled(true);//支持js
-        webView.loadUrl("http://www.sina.com/");
+        setting.setDisplayZoomControls(true);
+        setting.setSupportZoom(true);
+        setting.setBuiltInZoomControls(true);
+        setting.setUseWideViewPort(true);
+        setting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+        setting.setLoadWithOverviewMode(true);
+        webView.loadUrl("http://www.gyzx.org/");
         webView.setWebChromeClient(new WebChromeClient() {
             public void onProgressChanged(WebView view, int newProgress) {
 
@@ -68,6 +75,7 @@ public class MainActivity extends BaseActivity implements OnNetEventListener ,On
         });
         getData();
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -78,6 +86,7 @@ public class MainActivity extends BaseActivity implements OnNetEventListener ,On
             this.finish();
         }
     }
+
     private void getData() {
         showHud();
         HttpNetUtils.getInstance().requestNetData(HttpRequest.HttpMethod.GET, null, AppUtils.menuList, this);
@@ -86,34 +95,38 @@ public class MainActivity extends BaseActivity implements OnNetEventListener ,On
     @Override
     public void onNetSuccess(String tag, String body) {
         hideDialog();
-        AppUtils.Logs(getClass(),body);
-        List<MenuListModel> items = new Gson().fromJson(body, new TypeToken<List<MenuListModel>>() {
-        }.getType());
-        if(null != items){
-            final int subWidth = width/items.size();
-            for (final MenuListModel item :items) {
-                RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.bottom_view,null);
-                TextView tvMenu = (TextView) view.findViewById(R.id.tv_menu_text);
-                tvMenu.setText(item.item);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT,1.0f);
-                view.setLayoutParams(params);
-                llBottonView.addView(view);
-                view.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        PopupWindowUtil util = new PopupWindowUtil();
-                        util.dismissPopup();
-                        util.showPopup(MainActivity.this,view,item,subWidth,MainActivity.this);
-                    }
-                });
+        AppUtils.Logs(getClass(), body);
+        try {
+            List<MenuListModel> items = new Gson().fromJson(body, new TypeToken<List<MenuListModel>>() {
+            }.getType());
+            if (null != items) {
+                final int subWidth = width / items.size();
+                for (final MenuListModel item : items) {
+                    RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.bottom_view, null);
+                    TextView tvMenu = (TextView) view.findViewById(R.id.tv_menu_text);
+                    tvMenu.setText(item.item);
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+                    view.setLayoutParams(params);
+                    llBottonView.addView(view);
+                    view.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            PopupWindowUtil util = new PopupWindowUtil();
+                            util.dismissPopup();
+                            util.showPopup(MainActivity.this, view, item, subWidth, MainActivity.this);
+                        }
+                    });
+                }
             }
+        } catch (Exception ex) {
+            AppUtils.showToast(this, "服务器数据异常，请检查数据");
         }
     }
 
     @Override
     public void onNetError(String tag, String errorMsg, HttpException ex) {
         hideDialog();
-        AppUtils.showToast(this,errorMsg);
+        AppUtils.showToast(this, errorMsg);
     }
 
     @Override
