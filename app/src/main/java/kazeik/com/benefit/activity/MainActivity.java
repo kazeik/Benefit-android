@@ -92,17 +92,7 @@ public class MainActivity extends BaseActivity implements OnNetEventListener, On
 
     private void getPageIndex() {
         showHud();
-        String user = PreferencesUtils.getString(this, "user");
-        if (TextUtils.isEmpty(user)) {
-            String mac = PhoneUtils.getLocalMacAddressFromIp(this);
-            String randStr = AppUtils.getFixLenthString(6);
-            String md5Str = PhoneUtils.getMD5(mac + randStr);
-            user = md5Str;
-            PreferencesUtils.putString(this, "user", md5Str);
-        }
-        RequestParams params = new RequestParams();
-        params.addBodyParameter("user", user);
-        HttpNetUtils.getInstance().requestNetData(HttpRequest.HttpMethod.POST, params, AppUtils.appindex, this);
+        HttpNetUtils.getInstance().requestNetData(HttpRequest.HttpMethod.GET, null, AppUtils.appindex, this);
         HttpNetUtils.getInstance().requestNetData(HttpRequest.HttpMethod.GET, null, AppUtils.versionPath, this);
     }
 
@@ -129,7 +119,16 @@ public class MainActivity extends BaseActivity implements OnNetEventListener, On
             if (tag.equals(AppUtils.appindex)) {
                 JSONObject object = new JSONObject(body);
                 String url = object.optString("url");
-                webView.loadUrl(url);
+                String user = PreferencesUtils.getString(this, "user");
+                if (TextUtils.isEmpty(user)) {
+                    String mac = PhoneUtils.getLocalMacAddressFromIp(this);
+                    String randStr = AppUtils.getFixLenthString(6);
+                    String md5Str = PhoneUtils.getMD5(mac + randStr);
+                    user = md5Str;
+                    PreferencesUtils.putString(this, "user", md5Str);
+                }
+                user = "user="+user;
+                webView.postUrl(url,user.getBytes());
             } else if (tag.equals(AppUtils.menuList)) {
                 List<MenuListModel> items = new Gson().fromJson(body, new TypeToken<List<MenuListModel>>() {
                 }.getType());
