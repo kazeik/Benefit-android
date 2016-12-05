@@ -38,7 +38,7 @@ public class AppUtils {
     public static String menuList= "appmenu.php";
     public static String appindex = "appindex.php";
     public static String baseUrl = "http://appmenu.yishengsz.net/";
-    public static String versionPath = "";
+    public static String versionPath = "getmbVersionInfo.php";
 
     /*
  * 返回长度为【strLength】的随机数，在前面补0

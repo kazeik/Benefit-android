@@ -61,12 +61,12 @@ public class UpdataService extends Service {
     private void initDownManager(VersionBean bean) {
 //        // 设置下载后文件存放的位置
         SdcardUtils sdcardUtils = new SdcardUtils();
-        final File file = new File(sdcardUtils.getSDCardPath() + "DropPay/"+bean.capFileName+".apk");
+        final File file = new File(sdcardUtils.getSDCardPath() + "Benefit/"+bean.capFileName+".apk");
         if (file.exists())
             file.delete();
 
         HttpUtils utils = new HttpUtils();
-        utils.download(AppUtils.versionPath+bean.capFileName, file.getAbsolutePath(), new RequestCallBack<File>() {
+        utils.download(AppUtils.baseUrl+bean.capFileName, file.getAbsolutePath(), new RequestCallBack<File>() {
             @Override
             public void onSuccess(ResponseInfo<File> responseInfo) {
                 indeterminate = true;

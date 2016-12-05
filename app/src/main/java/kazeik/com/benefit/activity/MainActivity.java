@@ -1,6 +1,9 @@
 package kazeik.com.benefit.activity;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -39,6 +42,7 @@ import kazeik.com.benefit.DropApplication;
 import kazeik.com.benefit.R;
 import kazeik.com.benefit.bean.MenuListModel;
 import kazeik.com.benefit.bean.OnItemEventListener;
+import kazeik.com.benefit.bean.VersonModel;
 import kazeik.com.benefit.utils.AppUtils;
 import kazeik.com.benefit.utils.HttpNetUtils;
 import kazeik.com.benefit.utils.MyDateUtils;
@@ -88,7 +92,18 @@ public class MainActivity extends BaseActivity implements OnNetEventListener, On
 
     private void getPageIndex() {
         showHud();
-        HttpNetUtils.getInstance().requestNetData(HttpRequest.HttpMethod.GET, null, AppUtils.appindex, this);
+        String user = PreferencesUtils.getString(this, "user");
+        if (TextUtils.isEmpty(user)) {
+            String mac = PhoneUtils.getLocalMacAddressFromIp(this);
+            String randStr = AppUtils.getFixLenthString(6);
+            String md5Str = PhoneUtils.getMD5(mac + randStr);
+            user = md5Str;
+            PreferencesUtils.putString(this, "user", md5Str);
+        }
+        RequestParams params = new RequestParams();
+        params.addBodyParameter("user", user);
+        HttpNetUtils.getInstance().requestNetData(HttpRequest.HttpMethod.POST, params, AppUtils.appindex, this);
+        HttpNetUtils.getInstance().requestNetData(HttpRequest.HttpMethod.GET, null, AppUtils.versionPath, this);
     }
 
     @Override
@@ -104,17 +119,7 @@ public class MainActivity extends BaseActivity implements OnNetEventListener, On
 
     private void getData() {
         showHud();
-        String user = PreferencesUtils.getString(this, "user");
-        if (TextUtils.isEmpty(user)) {
-            String mac = PhoneUtils.getLocalMacAddressFromIp(this);
-            String randStr = AppUtils.getFixLenthString(6);
-            String md5Str = PhoneUtils.getMD5(mac + randStr);
-            user = md5Str;
-            PreferencesUtils.putString(this, "user", md5Str);
-        }
-        RequestParams params = new RequestParams();
-        params.addBodyParameter("user", user);
-        HttpNetUtils.getInstance().requestNetData(HttpRequest.HttpMethod.POST, params, AppUtils.menuList, this);
+        HttpNetUtils.getInstance().requestNetData(HttpRequest.HttpMethod.GET, null, AppUtils.menuList, this);
     }
 
     @Override
@@ -146,6 +151,27 @@ public class MainActivity extends BaseActivity implements OnNetEventListener, On
                             }
                         });
                     }
+                }
+            } else if (tag.equals(AppUtils.versionPath)) {
+                final VersonModel bean = new Gson().fromJson(body, VersonModel.class);
+                if (null == bean) {
+                    return;
+                }
+                if (bean.versionCode > AppUtils.getVersion(this)) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setMessage("版本号：" + bean.capVerson + "\n" + bean.capUpdateContent);
+                    builder.setTitle("新版本");
+                    builder.setCancelable(false);
+                    builder.setNegativeButton("更新", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                            Intent intt = new Intent(MainActivity.this, UpdataService.class);
+                            intt.putExtra("data", bean);
+                            startService(intt);
+                        }
+                    });
+                    builder.show();
                 }
             }
         } catch (Exception ex) {
