@@ -25,6 +25,7 @@ import com.lidroid.xutils.http.client.HttpRequest;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -37,6 +38,7 @@ import kazeik.com.benefit.utils.AppUtils;
 import kazeik.com.benefit.utils.HttpNetUtils;
 import kazeik.com.benefit.utils.MyDateUtils;
 import kazeik.com.benefit.utils.OnNetEventListener;
+import kazeik.com.benefit.utils.PhoneUtils;
 import kazeik.com.benefit.view.PopupWindowUtil;
 
 public class MainActivity extends BaseActivity implements OnNetEventListener, OnItemEventListener {
@@ -90,6 +92,9 @@ public class MainActivity extends BaseActivity implements OnNetEventListener, On
 
     private void getData() {
         showHud();
+        String mac = PhoneUtils.getLocalMacAddressFromIp(this);
+        String randStr = AppUtils.getFixLenthString(6);
+        String md5Str = PhoneUtils.getMD5(mac+randStr);
         HttpNetUtils.getInstance().requestNetData(HttpRequest.HttpMethod.GET, null, AppUtils.menuList, this);
     }
 
