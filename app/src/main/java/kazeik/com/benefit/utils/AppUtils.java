@@ -36,6 +36,7 @@ public class AppUtils {
     }
 
     public static String menuList= "appmenu.php";
+    public static String appindex = "appindex.php";
     public static String baseUrl = "http://appmenu.yishengsz.net/";
     public static String versionPath = "";
 
