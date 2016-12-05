@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.client.HttpRequest;
 
 import java.util.Date;
@@ -95,6 +96,8 @@ public class MainActivity extends BaseActivity implements OnNetEventListener, On
         String mac = PhoneUtils.getLocalMacAddressFromIp(this);
         String randStr = AppUtils.getFixLenthString(6);
         String md5Str = PhoneUtils.getMD5(mac+randStr);
+        RequestParams params = new RequestParams();
+        params.addBodyParameter("user",md5Str);
         HttpNetUtils.getInstance().requestNetData(HttpRequest.HttpMethod.GET, null, AppUtils.menuList, this);
     }
 
